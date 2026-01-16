@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/context/LanguageContext";
-import "./globals.css";
 import { SmoothScrollProvider } from "@/lib/smooth-scroll";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
+import "./globals.css";
 
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL
   ? `https://${process.env.NEXT_PUBLIC_SITE_URL}`
@@ -54,7 +56,11 @@ export default function RootLayout({
       <body className="antialiased scroll-smooth">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <LanguageProvider>
-            <SmoothScrollProvider>{children}</SmoothScrollProvider>
+            <SmoothScrollProvider>
+              {children}
+              <Analytics />
+              <SpeedInsights />
+            </SmoothScrollProvider>
           </LanguageProvider>
         </ThemeProvider>
       </body>
