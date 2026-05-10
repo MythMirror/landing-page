@@ -16,15 +16,16 @@ import {
   Loader2,
   CheckCircle2,
   AlertCircle,
+  Copyright,
 } from "lucide-react";
-import { FaInstagram, FaLinkedin, FaGithub } from "react-icons/fa";
+import { InstagramIcon, LinkedinIcon, GithubIcon } from "@/components/ui/icons";
 import { cn } from "@/lib/utils";
 import { ContactNetwork } from "../3d/ContactNetwork";
 
 // Estados Compartilhados
 const cardStyles = cn(
   "h-full p-8 rounded-3xl border shadow-xl backdrop-blur-xl transition-all relative overflow-hidden group flex flex-col",
-  "bg-white/80 border-slate-200 dark:bg-white/5 dark:border-white/10"
+  "bg-white/80 border-slate-200 dark:bg-white/5 dark:border-white/10",
 );
 
 // Redes Sociais
@@ -32,22 +33,23 @@ const socialLinks = [
   {
     name: "Instagram",
     href: "https://instagram.com/mythmirror",
-    icon: FaInstagram,
+    icon: InstagramIcon,
   },
   {
     name: "LinkedIn",
     href: "https://linkedin.com/company/mythmirror",
-    icon: FaLinkedin,
+    icon: LinkedinIcon,
   },
   {
     name: "GitHub",
     href: "https://github.com/mythmirror",
-    icon: FaGithub,
+    icon: GithubIcon,
   },
 ];
 
 export function Contact() {
   const { t, language } = useLanguage();
+  const currentYear = new Date().getFullYear();
 
   // Estados
   const [modalType, setModalType] = useState<"privacy" | "terms" | null>(null);
@@ -67,7 +69,7 @@ export function Contact() {
 
   async function handleSubscribe(
     e: React.FormEvent<HTMLFormElement>,
-    type: "b2c" | "b2b"
+    type: "b2c" | "b2b",
   ) {
     e.preventDefault();
     const setStatus = type === "b2c" ? setB2cStatus : setB2bStatus;
@@ -123,7 +125,7 @@ export function Contact() {
         </div>
 
         {/* Grid de Formulários */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-32 items-stretch">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 mb-18 items-stretch">
           {/* Lado Esquerdo: Waitlist (B2C) */}
           <motion.div
             initial={{ opacity: 0, x: -30 }}
@@ -335,28 +337,42 @@ export function Contact() {
         </div>
 
         {/* Footer */}
-        <footer className="border-t border-border/40 pt-12 flex flex-col md:flex-row items-center justify-between gap-6 text-sm text-muted-foreground">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-foreground">MythMirror</span>
-            <span>{t.contact.footer.rights}</span>
+        <footer className="border-t border-border/40 pt-12 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-6 text-sm text-muted-foreground">
+          {/* 1. Copyright / Brand - Centralizado no Mobile, Esquerda no Desktop */}
+          <div className="flex flex-col md:flex-row items-center gap-2 text-center md:text-left order-3 md:order-1">
+            <div className="flex items-center gap-2">
+              <span className="font-bold text-foreground">MythMirror</span>
+              <span className="hidden md:inline text-border">•</span>
+            </div>
+
+            <div className="flex items-center gap-1 text-muted-foreground">
+              <Copyright className="w-4 h-4" />
+              <span>{currentYear}</span>
+              <span> - {t.contact.footer.rights}</span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-6">
+          {/* 2. Links Legais - Meio */}
+          <div className="flex items-center gap-8 md:gap-6 order-2 md:order-2">
             <button
               onClick={() => openModal("privacy")}
-              className="hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none"
+              className="hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none relative group"
             >
               {t.contact.footer.links.privacy}
+              {/* Sublinhado sutil no hover */}
+              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-primary transition-all group-hover:w-full" />
             </button>
             <button
               onClick={() => openModal("terms")}
-              className="hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none"
+              className="hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none relative group"
             >
               {t.contact.footer.links.terms}
+              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-primary transition-all group-hover:w-full" />
             </button>
           </div>
 
-          <div className="flex items-center gap-4">
+          {/* 3. Social - Topo no Mobile (para fácil acesso), Direita no Desktop */}
+          <div className="flex items-center gap-4 order-1 md:order-3">
             {socialLinks.map((social) => (
               <a
                 key={social.name}
@@ -364,9 +380,9 @@ export function Contact() {
                 target="_blank"
                 rel="noopener noreferrer"
                 aria-label={social.name}
-                className="p-2 rounded-full bg-secondary/50 hover:bg-secondary hover:text-foreground transition-colors cursor-pointer flex items-center justify-center"
+                className="p-2.5 rounded-full bg-secondary/30 border border-white/5 hover:bg-primary/20 hover:border-primary/50 hover:text-primary transition-all duration-300 cursor-pointer flex items-center justify-center group"
               >
-                <social.icon className="w-4 h-4" />
+                <social.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
               </a>
             ))}
           </div>

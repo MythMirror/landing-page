@@ -5,6 +5,11 @@ export interface Translations {
     subtitle: string;
     cta_primary: string;
     cta_secondary: string;
+    stats: {
+      apps: string;
+      ecosystem: string;
+      possibilities: string;
+    }
   };
   nav: {
     home: string;
@@ -145,6 +150,14 @@ export interface Translations {
       understood: string;
       updated_label: string;
       footer_quote: string;
+    };
+  };
+  system: {
+    loading: string;
+    not_found: {
+      title: string;
+      description: string;
+      button: string;
     };
   };
 }

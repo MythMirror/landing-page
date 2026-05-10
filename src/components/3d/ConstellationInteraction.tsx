@@ -1,73 +1,75 @@
 "use client";
 
 import { useMemo, useRef } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { Points, PointMaterial } from "@react-three/drei";
 import * as THREE from "three";
 import { useTheme } from "next-themes";
+import { useIsMobile } from "@/hooks/useMobile";
 
-const STAR_COUNT = 300;
+function StarField({ color, count }: { color: string; count: number }) {
+  const ref = useRef<THREE.Points>(null);
+  const t = useRef(0);
 
-function StarField({ color }: { color: string }) {
-  const { viewport } = useThree();
-  const pointsRef = useRef<THREE.Points>(null);
-
-  // Posições das Estrelas
-  const particles = useMemo(() => {
-    const temp = new Float32Array(STAR_COUNT * 3);
-    for (let i = 0; i < STAR_COUNT; i++) {
-      // Espalhar pela largura/altura da viewport
-      const x = (Math.random() - 0.5) * viewport.width * 2;
-      const y = (Math.random() - 0.5) * viewport.height * 2;
-      const z = (Math.random() - 0.5) * 5;
-      temp[i * 3] = x;
-      temp[i * 3 + 1] = y;
-      temp[i * 3 + 2] = z;
+  const positions = useMemo(() => {
+    const a = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      a[i * 3] = (Math.random() - 0.5) * 50;
+      a[i * 3 + 1] = (Math.random() - 0.5) * 30;
+      a[i * 3 + 2] = (Math.random() - 0.5) * 5;
     }
-    return temp;
-  }, [viewport]);
+    return a;
+  }, [count]);
 
-  // Loop de Animação
-  useFrame((state) => {
-    if (!pointsRef.current) return;
-
-    // Apenas rotação suave do universo
-    pointsRef.current.rotation.z += 0.0003;
-    pointsRef.current.rotation.x =
-      Math.sin(state.clock.getElapsedTime() * 0.1) * 0.05;
+  useFrame((_, delta) => {
+    if (!ref.current) return;
+    const dt = Math.min(delta, 0.05);
+    t.current += dt;
+    ref.current.rotation.z += dt * 0.015;
+    ref.current.rotation.x = Math.sin(t.current * 0.07) * 0.035;
   });
 
   return (
-    <Points
-      ref={pointsRef}
-      positions={particles}
-      stride={3}
-      frustumCulled={false}
-    >
+    <Points ref={ref} positions={positions} stride={3} frustumCulled={false}>
       <PointMaterial
         transparent
         color={color}
-        size={0.08}
-        sizeAttenuation={true}
+        size={0.06}
+        sizeAttenuation
         depthWrite={false}
-        opacity={0.4}
+        opacity={0.38}
+        toneMapped={false}
       />
     </Points>
   );
 }
 
 export function ConstellationInteraction() {
-  const { theme } = useTheme();
-  const color = theme === "dark" ? "#22d3ee" : "#6d28d9";
+  const { resolvedTheme } = useTheme();
+  const isMobile = useIsMobile();
+  const color = resolvedTheme === "dark" ? "#a78bfa" : "#6d28d9";
+  const count = isMobile ? 80 : 200;
 
   return (
-    <div className="fixed inset-0 z-0 pointer-events-none">
+    <div className="absolute inset-0 pointer-events-none">
       <Canvas
-        dpr={[1, 2]}
+        dpr={1}
         camera={{ position: [0, 0, 10], fov: 75 }}
-        gl={{ alpha: true, antialias: false }}
+        gl={{
+          alpha: true,
+          antialias: false,
+          powerPreference: "low-power",
+          stencil: false,
+          depth: false,
+          failIfMajorPerformanceCaveat: false,
+        }}
+        onCreated={({ gl }) => {
+          gl.domElement.addEventListener("webglcontextlost", (e) =>
+            e.preventDefault(),
+          );
+        }}
       >
-        <StarField color={color} />
+        <StarField color={color} count={count} />
       </Canvas>
     </div>
   );

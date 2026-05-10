@@ -21,7 +21,7 @@ export function SectionDivider({
           "bottom-0 bg-gradient-to-t from-background to-transparent",
         position === "both" &&
           "inset-y-0 h-full bg-gradient-to-b from-background via-transparent to-background",
-        className
+        className,
       )}
     />
   );

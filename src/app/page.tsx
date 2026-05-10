@@ -1,26 +1,54 @@
+"use client";
+
+import dynamic from "next/dynamic";
+import { Suspense } from "react";
 import { Header } from "@/components/layout/Header";
-import { Hero } from "@/components/sections/Hero";
-import { Ecosystem } from "@/components/sections/Ecosystem";
-import { Mission } from "@/components/sections/Mission";
-import { Origin } from "@/components/sections/Origins";
-import { Team } from "@/components/sections/Team";
-import { Roadmap } from "@/components/sections/Roadmap";
-import { Contact } from "@/components/sections/Contact";
 import { BackgroundGrid } from "@/components/layout/BackgroundGrid";
-import { ConstellationInteraction } from "@/components/3d/ConstellationInteraction";
+import { Hero } from "@/components/sections/Hero";
+
+// Constellation: fundo global, carregado de forma não-bloqueante
+const ConstellationInteraction = dynamic(
+  () =>
+    import("@/components/3d/ConstellationInteraction").then(
+      (m) => m.ConstellationInteraction,
+    ),
+  { ssr: false },
+);
+
+// Seções: carregadas após o loader sumir (lazy)
+const Ecosystem = dynamic(() =>
+  import("@/components/sections/Ecosystem").then((m) => m.Ecosystem),
+);
+const Mission = dynamic(() =>
+  import("@/components/sections/Mission").then((m) => m.Mission),
+);
+const Origin = dynamic(() =>
+  import("@/components/sections/Origins").then((m) => m.Origin),
+);
+const Team = dynamic(() =>
+  import("@/components/sections/Team").then((m) => m.Team),
+);
+const Roadmap = dynamic(() =>
+  import("@/components/sections/Roadmap").then((m) => m.Roadmap),
+);
+const Contact = dynamic(() =>
+  import("@/components/sections/Contact").then((m) => m.Contact),
+);
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background relative selection:bg-primary/30">
-      {/* Fundo Base*/}
-      <BackgroundGrid className="z-0 fixed inset-0" />
+    <main className="relative min-h-screen bg-background overflow-x-hidden">
+      {/* Camada base — grid CSS, sem JS */}
+      <BackgroundGrid className="fixed inset-0 z-0 pointer-events-none" />
 
-      {/* Partículas */}
+      {/* Estrelas 3D — fundo global, baixa prioridade */}
       <div className="fixed inset-0 z-[1] pointer-events-none">
-        <ConstellationInteraction />
+        <Suspense fallback={null}>
+          <ConstellationInteraction />
+        </Suspense>
       </div>
 
-      {/* Conteúdo do Site */}
+      {/* Conteúdo */}
       <div className="relative z-10 flex flex-col w-full">
         <Header />
         <Hero />

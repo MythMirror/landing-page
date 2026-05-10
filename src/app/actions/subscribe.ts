@@ -9,7 +9,7 @@ export async function subscribeToBrevo(formData: FormData) {
   if (!email) return { success: false, message: "Email é obrigatório." };
 
   // IDs das Listas no Brevo
-  const listIds = type === "b2c" ? [3] : [4]; // Ex: 2 é B2C, 3 é B2B
+  const listIds = type === "b2c" ? [3] : [4];
 
   // Dados a enviar
   const payload = {
@@ -41,7 +41,7 @@ export async function subscribeToBrevo(formData: FormData) {
       console.error("Brevo Error:", errorData);
 
       // Se quiser tratar erro específico:
-      // if (errorData.code === 'duplicate_parameter') return { success: true, message: "Já inscrito!" };
+      if (errorData.code === 'duplicate_parameter') return { success: true, message: "Já inscrito!" };
 
       return { success: false, message: "Erro ao inscrever. Tente novamente." };
     }

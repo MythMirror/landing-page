@@ -18,9 +18,9 @@ const nextConfig = {
     optimizePackageImports: [
       "lucide-react",
       "framer-motion",
-      "react-icons",
       "@react-three/drei",
       "@react-three/fiber",
+      "three",
     ],
   },
 };

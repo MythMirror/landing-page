@@ -81,7 +81,7 @@ export function LegalModal({ isOpen, onClose, type, data }: LegalModalProps) {
             }}
             className={cn(
               "relative w-full max-w-2xl max-h-[85vh] rounded-2xl border shadow-2xl flex flex-col overflow-hidden",
-              "bg-background/90 border-white/20 dark:border-white/10 backdrop-blur-xl ring-1 ring-white/10"
+              "bg-background/90 border-white/20 dark:border-white/10 backdrop-blur-xl ring-1 ring-white/10",
             )}
             onWheel={(e) => e.stopPropagation()}
             onClick={(e) => e.stopPropagation()}

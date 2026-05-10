@@ -1,41 +1,46 @@
 "use client";
-
 import { cn } from "@/lib/utils";
 
-interface BackgroundGridProps {
-  className?: string;
-}
-
-export function BackgroundGrid({ className }: BackgroundGridProps) {
+export function BackgroundGrid({ className }: { className?: string }) {
   return (
     <div
-      className={cn(
-        "fixed inset-0 z-0 pointer-events-none overflow-hidden",
-        className
-      )}
+      className={cn("pointer-events-none overflow-hidden", className)}
+      aria-hidden="true"
     >
-      {/* Grid Layer 
-        - Light Mode: Linhas cinza muito sutis (#00000008)
-        - Dark Mode: Linhas brancas/azuladas sutis (rgba(255,255,255,0.05))
-      */}
-      <div className="absolute inset-0 z-0 opacity-[0.4] dark:opacity-[0.3]">
+      {/* Animated grid — contain:strict keeps it isolated */}
+      <div className="absolute inset-0" style={{ contain: "strict" }}>
         <div
-          className="absolute inset-0 h-[200%] w-full animate-grid-drift"
+          className="absolute inset-0 h-[200%] w-full animate-grid-drift opacity-25 dark:opacity-15"
           style={{
-            backgroundImage: `
-              linear-gradient(to right, var(--color-border) 1px, transparent 1px),
-              linear-gradient(to bottom, var(--color-border) 1px, transparent 1px)
-            `,
-            backgroundSize: "40px 40px",
+            backgroundImage:
+              "linear-gradient(to right,var(--color-border) 1px,transparent 1px),linear-gradient(to bottom,var(--color-border) 1px,transparent 1px)",
+            backgroundSize: "52px 52px",
           }}
         />
       </div>
 
-      {/* Radial Gradient Overlay para profundidade (Vignette) */}
-      <div className="absolute inset-0 bg-background/20 dark:bg-background/60 [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]" />
+      {/* Vignette */}
+      <div className="absolute inset-0 bg-background/30 dark:bg-background/50 [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,transparent_30%,black_100%)]" />
 
-      {/* Noise Texture para tirar o aspecto "chapado" */}
-      <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
+      {/* Aurora blobs — CSS only, no JS */}
+      <div
+        className="absolute -top-[15%] -left-[5%] w-[65vw] h-[65vw] rounded-full opacity-20 dark:opacity-12"
+        style={{
+          background:
+            "radial-gradient(circle,color-mix(in srgb,var(--color-primary) 55%,transparent) 0%,transparent 68%)",
+          filter: "blur(90px)",
+          animation: "aurora-shift 20s ease infinite alternate",
+        }}
+      />
+      <div
+        className="absolute -bottom-[10%] -right-[5%] w-[55vw] h-[55vw] rounded-full opacity-15 dark:opacity-10"
+        style={{
+          background:
+            "radial-gradient(circle,color-mix(in srgb,#e879f9 50%,transparent) 0%,transparent 68%)",
+          filter: "blur(100px)",
+          animation: "aurora-shift 26s ease infinite alternate-reverse",
+        }}
+      />
     </div>
   );
 }

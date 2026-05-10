@@ -8,6 +8,13 @@
     "start": "next start",
     "lint": "eslint"
   },
+  "browserslist": [
+    "chrome >= 100",
+    "firefox >= 100",
+    "edge >= 100",
+    "safari >= 15",
+    "ios >= 15"
+  ],
   "dependencies": {
     "@formspree/react": "^3.0.0",
     "@radix-ui/react-slot": "^1.2.4",
@@ -25,7 +32,6 @@
     "next-themes": "^0.4.6",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-icons": "^5.5.0",
     "react-intersection-observer": "^10.0.2",
     "tailwind-merge": "^3.4.0",
     "three": "^0.182.0"

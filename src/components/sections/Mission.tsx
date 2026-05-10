@@ -1,11 +1,22 @@
 "use client";
 
 import { useRef } from "react";
+import dynamic from "next/dynamic";
 import { useLanguage } from "@/context/LanguageContext";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { cn } from "@/lib/utils";
-import { BrainCircuit, Dna, HeartHandshake, Lightbulb, LucideIcon } from "lucide-react";
-import { MissionDNA } from "../3d/MissionDNA";
+import {
+  BrainCircuit,
+  Dna,
+  HeartHandshake,
+  Lightbulb,
+  LucideIcon,
+} from "lucide-react";
+
+const MissionDNA = dynamic(
+  () => import("../3d/MissionDNA").then((m) => m.MissionDNA),
+  { ssr: false },
+);
 
 // Componente de Card de Estatística
 function StatCard({
@@ -100,7 +111,7 @@ export function Mission() {
                   "px-3 py-1 rounded-full",
                   "border border-primary/30 bg-primary/10",
                   "text-xs font-bold text-primary uppercase tracking-widest",
-                  "mb-4"
+                  "mb-4",
                 )}
               >
                 <Dna className="h-3.5 w-3.5 animate-pulse" />

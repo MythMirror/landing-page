@@ -16,7 +16,7 @@ export function NeonInput({
           "text-foreground placeholder:text-muted-foreground/50",
           "bg-background/30 border-b-2 border-foreground/10",
           "focus:bg-background/60 focus:border-transparent focus:backdrop-blur-sm",
-          className
+          className,
         )}
       />
 
@@ -26,7 +26,7 @@ export function NeonInput({
           "absolute bottom-0 left-0 h-[2px] w-full bg-primary",
           "transform scale-x-0 origin-left transition-transform duration-300 ease-out",
           "peer-focus:scale-x-100",
-          "peer-focus:shadow-[0_0_15px_2px_var(--color-primary)]"
+          "peer-focus:shadow-[0_0_15px_2px_var(--color-primary)]",
         )}
       />
     </div>
@@ -46,7 +46,7 @@ export function NeonTextarea({
           "text-foreground placeholder:text-muted-foreground/50",
           "bg-background/30 border-b-2 border-foreground/10",
           "focus:bg-background/60 focus:border-transparent focus:backdrop-blur-sm",
-          className
+          className,
         )}
       />
       <div
@@ -54,7 +54,7 @@ export function NeonTextarea({
           "absolute bottom-0 left-0 h-[2px] w-full bg-primary",
           "transform scale-x-0 origin-left transition-transform duration-300 ease-out",
           "peer-focus:scale-x-100",
-          "peer-focus:shadow-[0_0_15px_2px_var(--color-primary)]"
+          "peer-focus:shadow-[0_0_15px_2px_var(--color-primary)]",
         )}
       />
     </div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useMemo } from "react";
+import { useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   Float,
@@ -14,19 +14,18 @@ import { useTheme } from "next-themes";
 function DNAStrand({ color, offset = 0 }: { color: string; offset?: number }) {
   const pointsRef = useRef<THREE.Points>(null);
 
-  // Gerar pontos em formato de hélice
+  // Otimização: Criação estática dos pontos
   const particles = useMemo(() => {
     const temp = [];
-    const count = 100; // Número de "bases" do DNA
+    const count = 100;
 
     for (let i = 0; i < count; i++) {
       const t = i / count;
-      const angle = t * Math.PI * 8; // 4 voltas completas
+      const angle = t * Math.PI * 8;
 
-      // Posição na hélice
       const x = Math.cos(angle + offset) * 1.5;
       const z = Math.sin(angle + offset) * 1.5;
-      const y = (t - 0.5) * 12; // Altura alongada
+      const y = (t - 0.5) * 12;
 
       temp.push(x, y, z);
     }
@@ -35,9 +34,8 @@ function DNAStrand({ color, offset = 0 }: { color: string; offset?: number }) {
 
   useFrame((state) => {
     if (!pointsRef.current) return;
-    // Rotação contínua lenta
     pointsRef.current.rotation.y += 0.005;
-    // Movimento vertical suave (flutuação)
+    // Otimização: Math.sin direto na propriedade evita alocação de memória extra
     pointsRef.current.position.y =
       Math.sin(state.clock.elapsedTime * 0.5) * 0.5;
   });
@@ -62,6 +60,7 @@ function DNAStrand({ color, offset = 0 }: { color: string; offset?: number }) {
   );
 }
 
+// O GRANDE GANHO DE PERFORMANCE ESTÁ AQUI
 function ConnectingLines({
   colorPrimary,
   colorSecondary,
@@ -69,38 +68,58 @@ function ConnectingLines({
   colorPrimary: string;
   colorSecondary: string;
 }) {
-  // Linhas horizontais conectando as duas fitas (as "pontes" do DNA)
-  const groupRef = useRef<THREE.Group>(null);
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const count = 40;
 
-  const bridges = useMemo(() => {
-    return new Array(40).fill(0).map((_, i) => {
-      const t = i / 40;
+  // Objetos temporários para cálculo de matriz (não geram lixo no render loop)
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const color1 = useMemo(() => new THREE.Color(colorPrimary), [colorPrimary]);
+  const color2 = useMemo(
+    () => new THREE.Color(colorSecondary),
+    [colorSecondary],
+  );
+
+  useEffect(() => {
+    if (!meshRef.current) return;
+
+    for (let i = 0; i < count; i++) {
+      const t = i / count;
       const y = (t - 0.5) * 12;
-      return y;
-    });
-  }, []);
+
+      // Define posição e rotação
+      dummy.position.set(0, y, 0);
+      dummy.rotation.set(0, (i / 40) * Math.PI * 8, Math.PI / 2);
+      dummy.updateMatrix();
+
+      // Aplica a matriz na instância i
+      meshRef.current.setMatrixAt(i, dummy.matrix);
+
+      // Aplica a cor alternada na instância i
+      meshRef.current.setColorAt(i, i % 2 === 0 ? color1 : color2);
+    }
+
+    // Avisa o Three.js que as matrizes e cores foram atualizadas
+    meshRef.current.instanceMatrix.needsUpdate = true;
+    if (meshRef.current.instanceColor)
+      meshRef.current.instanceColor.needsUpdate = true;
+  }, [dummy, color1, color2]);
 
   useFrame(() => {
-    if (groupRef.current) groupRef.current.rotation.y += 0.005;
+    if (meshRef.current) meshRef.current.rotation.y += 0.005;
   });
 
   return (
-    <group ref={groupRef}>
-      {bridges.map((y, i) => (
-        <mesh
-          key={i}
-          position={[0, y, 0]}
-          rotation={[0, (i / 40) * Math.PI * 8, Math.PI / 2]}
-        >
-          <cylinderGeometry args={[0.02, 0.02, 3, 4]} />
-          <meshBasicMaterial
-            color={i % 2 === 0 ? colorPrimary : colorSecondary}
-            transparent
-            opacity={0.2}
-          />
-        </mesh>
-      ))}
-    </group>
+    <instancedMesh ref={meshRef} args={[undefined, undefined, count]}>
+      {/* 4 segmentos radiais cria um prisma retangular, muito mais leve que um cilindro redondo */}
+      <cylinderGeometry args={[0.02, 0.02, 3, 4]} />
+      <meshBasicMaterial
+        transparent
+        opacity={0.2}
+        toneMapped={false}
+        // VertexColors permite que cada instância tenha sua própria cor
+        vertexColors
+      />
+    </instancedMesh>
   );
 }
 
@@ -113,28 +132,28 @@ export function MissionDNA() {
 
   return (
     <div className="absolute inset-0 w-full h-full pointer-events-none opacity-60 mix-blend-screen">
-      <Canvas dpr={[1, 2]}>
-        <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={45} />
-
+      <Canvas
+        dpr={[1, 1.5]} // Mantém o padrão de performance
+        gl={{
+          antialias: false,
+          powerPreference: "high-performance",
+          depth: false, // Desliga depth buffer já que tudo é transparente/fundo
+        }}
+        camera={{ position: [0, 0, 8], fov: 45 }} // Câmera movida para prop para evitar re-render
+      >
         <ambientLight intensity={0.5} />
 
         <group rotation={[0, 0, Math.PI / 6]}>
-          {" "}
-          {/* Leve inclinação para estilo */}
           <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>
-            {/* Fita 1 */}
             <DNAStrand color={primary} offset={0} />
-            {/* Fita 2 (Defasada em PI) */}
             <DNAStrand color={secondary} offset={Math.PI} />
-            {/* Conexões */}
-            <ConnectingLines
+            {/* <ConnectingLines
               colorPrimary={primary}
               colorSecondary={secondary}
-            />
+            /> */}
           </Float>
         </group>
 
-        {/* Fog para profundidade */}
         <fog attach="fog" args={[isDark ? "#020617" : "#f8fafc", 5, 15]} />
       </Canvas>
     </div>

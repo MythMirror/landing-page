@@ -8,10 +8,15 @@ export const en: Translations = {
       "Transforming realities through an integrated ecosystem of education, culture, and finance. The reflection of the Brazilian youth's potential.",
     cta_primary: "Discover the Ecosystem",
     cta_secondary: "Join the Mission",
+    stats: {
+      apps: "Apps",
+      ecosystem: "Ecosystem",
+      possibilities: "Possibilities",
+    },
   },
   nav: {
     home: "Home",
-    ecosystem: "Solutions",
+    ecosystem: "Ecosystem",
     mission: "DNA",
     origin: "Origin",
     team: "Leadership",
@@ -241,7 +246,7 @@ export const en: Translations = {
       },
     },
     footer: {
-      rights: "© 2026 MythMirror Technology. All rights reserved.",
+      rights: "MythMirror Technology. All rights reserved.",
       links: { privacy: "Privacy", terms: "Terms of Use" },
     },
   },
@@ -252,6 +257,15 @@ export const en: Translations = {
       updated_label: "Updated:",
       footer_quote:
         '"Transparency is the foundation of trust in the digital age." — MythMirror',
+    },
+  },
+  system: {
+    loading: "SYSTEM SYNCHRONIZING...",
+    not_found: {
+      title: "404 // SIGNAL LOST",
+      description:
+        "The digital coordinates you seek do not exist in this timeline or have been consumed by the void.",
+      button: "Return to Origin",
     },
   },
 };

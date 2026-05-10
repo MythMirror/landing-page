@@ -8,10 +8,15 @@ export const pt: Translations = {
       "Transformando realidades através de um ecossistema integrado de educação, cultura e finanças. O reflexo do potencial do jovem brasileiro.",
     cta_primary: "Conheça o Futuro",
     cta_secondary: "Junte-se à Missão",
+    stats: {
+      apps: "Apps",
+      ecosystem: "Ecossistema",
+      possibilities: "Possibilidades",
+    },
   },
   nav: {
     home: "Início",
-    ecosystem: "Soluções",
+    ecosystem: "Ecossistema",
     mission: "DNA",
     origin: "Origem",
     team: "Liderança",
@@ -239,7 +244,7 @@ export const pt: Translations = {
       },
     },
     footer: {
-      rights: "© 2026 MythMirror Tecnologia. Todos os direitos reservados.",
+      rights: "MythMirror Tecnologia. Todos os direitos reservados.",
       links: { privacy: "Privacidade", terms: "Termos de Uso" },
     },
   },
@@ -250,6 +255,15 @@ export const pt: Translations = {
       updated_label: "Atualizado:",
       footer_quote:
         '"A transparência é a base da confiança na era digital." — MythMirror',
+    },
+  },
+  system: {
+    loading: "SINCRONIZANDO SISTEMA...",
+    not_found: {
+      title: "404 // SINAL PERDIDO",
+      description:
+        "As coordenadas digitais que você busca não existem nesta linha do tempo ou foram consumidas pelo vazio.",
+      button: "Retornar à Origem",
     },
   },
 };
