@@ -30,12 +30,20 @@ export function Header() {
   const [activeSection, setActiveSection] = useState("hero");
   const { scrollY } = useScroll();
 
-  // ✅ All hooks at top-level unconditionally
+  // ✅ All hooks unconditional at top level
   const progressScaleX = useTransform(scrollY, [0, 4000], [0, 1]);
 
   useMotionValueEvent(scrollY, "change", (v) => {
     if (v > 60 !== scrolled) setScrolled(v > 60);
   });
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   // Active section tracking
   useEffect(() => {
@@ -57,9 +65,11 @@ export function Header() {
     (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
       e.preventDefault();
       setMenuOpen(false);
-      document
-        .querySelector(id)
-        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      setTimeout(() => {
+        document
+          .querySelector(id)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 50);
     },
     [],
   );
@@ -98,7 +108,7 @@ export function Header() {
               : undefined
           }
         >
-          {/* Scroll progress bar — always rendered, opacity transitions */}
+          {/* Scroll progress line */}
           <motion.div
             className="absolute bottom-0 left-0 h-[1px] rounded-b-2xl pointer-events-none"
             style={{
@@ -107,7 +117,7 @@ export function Header() {
               width: "100%",
               scaleX: progressScaleX,
               transformOrigin: "left",
-              opacity: scrolled ? 0.8 : 0,
+              opacity: scrolled ? 0.7 : 0,
             }}
           />
 
@@ -134,7 +144,7 @@ export function Header() {
                 className="absolute inset-0 h-full w-full object-contain z-10 hidden dark:block group-hover:scale-110 group-hover:rotate-[6deg] transition-transform duration-400"
               />
             </div>
-            <span className="font-bold text-lg tracking-tighter">
+            <span className="font-bold text-lg tracking-tighter text-foreground">
               MythMirror
             </span>
           </a>
@@ -187,18 +197,21 @@ export function Header() {
             </div>
           </nav>
 
-          {/* Actions */}
+          {/* Right actions */}
           <div className="flex items-center gap-2 z-50">
             <button
               onClick={toggleLang}
               className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-full border border-border/50 bg-background/40 hover:bg-primary/8 hover:border-primary/30 transition-all duration-200 cursor-pointer"
+              aria-label="Toggle language"
             >
               <Globe className="h-3 w-3" />
               {language.toUpperCase()}
             </button>
+
             <ThemeToggle />
+
             <button
-              className="lg:hidden p-2 cursor-pointer hover:bg-primary/10 rounded-full transition-colors"
+              className="lg:hidden p-2 cursor-pointer hover:bg-primary/10 rounded-full transition-colors text-foreground"
               onClick={() => setMenuOpen((v) => !v)}
               aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
               aria-expanded={menuOpen}
@@ -231,64 +244,92 @@ export function Header() {
         </div>
       </motion.header>
 
-      {/* Mobile menu */}
+      {/* ── Mobile menu ─────────────────────────────────── */}
       <AnimatePresence>
         {menuOpen && (
           <>
+            {/* Backdrop */}
             <motion.div
-              key="bd"
+              key="backdrop"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="fixed inset-0 z-30 lg:hidden"
+              transition={{ duration: 0.22 }}
+              className="fixed inset-0 z-40 lg:hidden"
               style={{
-                background: "rgba(2,0,15,0.7)",
-                backdropFilter: "blur(8px)",
+                background: "rgba(0,0,0,0.45)",
+                backdropFilter: "blur(6px)",
               }}
               onClick={() => setMenuOpen(false)}
             />
+
+            {/* Panel — uses CSS variables so it works in both light and dark */}
             <motion.div
               key="panel"
-              initial={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              transition={{ duration: 0.25, ease: [0.25, 0.46, 0.45, 0.94] }}
-              className="fixed top-0 left-0 right-0 z-40 lg:hidden pt-24 pb-8 px-6 flex flex-col gap-4 border-b border-border/20 shadow-2xl max-h-screen overflow-y-auto"
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.26, ease: [0.25, 0.46, 0.45, 0.94] }}
+              className="fixed top-0 left-0 right-0 z-50 lg:hidden flex flex-col border-b border-border/30 shadow-2xl"
               style={{
-                background: "rgba(2,0,15,0.96)",
-                backdropFilter: "blur(24px)",
+                /* ✅ Theme-aware: uses CSS variable for background */
+                background: "var(--background)",
+                borderColor: "var(--border)",
+                paddingTop: "5.5rem" /* clears the header bar */,
+                paddingBottom: "1.5rem",
+                paddingLeft: "1.5rem",
+                paddingRight: "1.5rem",
+                maxHeight: "100dvh",
+                overflowY: "auto",
               }}
             >
+              {/* Nav links */}
               <nav className="flex flex-col">
                 {NAV.map(({ key, href }, i) => (
                   <motion.a
                     key={key}
                     href={href}
                     onClick={(e) => scrollTo(e, href)}
-                    initial={{ opacity: 0, x: -14 }}
+                    initial={{ opacity: 0, x: -12 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: i * 0.04 }}
-                    className="py-4 text-xl font-bold text-foreground/70 hover:text-primary transition-colors border-b border-white/5 last:border-0 cursor-pointer"
+                    className={cn(
+                      "flex items-center justify-between py-4 text-lg font-semibold transition-colors cursor-pointer",
+                      "border-b border-border/30 last:border-0",
+                      activeSection === href.slice(1)
+                        ? "text-primary"
+                        : "text-foreground hover:text-primary",
+                    )}
                   >
-                    {t.nav[key as keyof typeof t.nav] || key}
+                    <span>{t.nav[key as keyof typeof t.nav] || key}</span>
+                    {activeSection === href.slice(1) && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+                    )}
                   </motion.a>
                 ))}
               </nav>
+
+              {/* Language + Theme row */}
               <div
-                className="mt-2 flex items-center justify-between p-4 rounded-2xl border border-border/20"
-                style={{ background: "rgba(167,139,250,0.05)" }}
+                className="mt-5 flex items-center justify-between gap-3 p-4 rounded-2xl border border-border/40"
+                style={{
+                  background:
+                    "color-mix(in srgb, var(--primary) 6%, var(--background))",
+                }}
               >
                 <span className="text-sm text-muted-foreground">
                   Idioma / Language
                 </span>
-                <button
-                  onClick={toggleLang}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/12 text-primary text-sm font-bold cursor-pointer hover:bg-primary/20 transition-colors"
-                >
-                  <Globe className="h-3.5 w-3.5" />
-                  {language === "pt" ? "Português" : "English"}
-                </button>
+                <div className="flex items-center gap-2">
+                  <ThemeToggle />
+                  <button
+                    onClick={toggleLang}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold cursor-pointer transition-colors text-primary border border-primary/30 hover:bg-primary/10"
+                  >
+                    <Globe className="h-3.5 w-3.5" />
+                    {language === "pt" ? "PT" : "EN"}
+                  </button>
+                </div>
               </div>
             </motion.div>
           </>

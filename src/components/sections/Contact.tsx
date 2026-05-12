@@ -336,55 +336,55 @@ export function Contact() {
           </motion.div>
         </div>
 
-        {/* Footer */}
-        <footer className="border-t border-border/40 pt-12 flex flex-col md:flex-row items-center justify-between gap-8 md:gap-6 text-sm text-muted-foreground">
-          {/* 1. Copyright / Brand - Centralizado no Mobile, Esquerda no Desktop */}
-          <div className="flex flex-col md:flex-row items-center gap-2 text-center md:text-left order-3 md:order-1">
+        {/* ── Footer ───────────────────────────────────────── */}
+        <footer className="border-t border-border/30 pt-10 pb-2">
+          {/* Top row: brand + social */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-5 mb-6">
+            {/* Brand */}
             <div className="flex items-center gap-2">
-              <span className="font-bold text-foreground">MythMirror</span>
-              <span className="hidden md:inline text-border">•</span>
+              <span className="font-bold text-foreground text-base">
+                MythMirror
+              </span>
+              <span className="text-border/60">•</span>
+              <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                <Copyright className="w-3.5 h-3.5 shrink-0" />
+                <span>{currentYear}</span>
+              </div>
             </div>
 
-            <div className="flex items-center gap-1 text-muted-foreground">
-              <Copyright className="w-4 h-4" />
-              <span>{currentYear}</span>
-              <span> - {t.contact.footer.rights}</span>
+            {/* Social icons */}
+            <div className="flex items-center gap-3">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.name}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.name}
+                  className="p-2.5 rounded-full border border-border/50 text-muted-foreground hover:text-primary hover:border-primary/40 hover:bg-primary/8 transition-all duration-200 cursor-pointer flex items-center justify-center group"
+                >
+                  <social.icon className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
+                </a>
+              ))}
             </div>
           </div>
 
-          {/* 2. Links Legais - Meio */}
-          <div className="flex items-center gap-8 md:gap-6 order-2 md:order-2">
-            <button
-              onClick={() => openModal("privacy")}
-              className="hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none relative group"
-            >
-              {t.contact.footer.links.privacy}
-              {/* Sublinhado sutil no hover */}
-              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-primary transition-all group-hover:w-full" />
-            </button>
-            <button
-              onClick={() => openModal("terms")}
-              className="hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none relative group"
-            >
-              {t.contact.footer.links.terms}
-              <span className="absolute -bottom-1 left-0 w-0 h-[1px] bg-primary transition-all group-hover:w-full" />
-            </button>
-          </div>
+          {/* Bottom row: rights + legal links */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-muted-foreground/70">
+            <span>{t.contact.footer.rights}</span>
 
-          {/* 3. Social - Topo no Mobile (para fácil acesso), Direita no Desktop */}
-          <div className="flex items-center gap-4 order-1 md:order-3">
-            {socialLinks.map((social) => (
-              <a
-                key={social.name}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.name}
-                className="p-2.5 rounded-full bg-secondary/30 border border-white/5 hover:bg-primary/20 hover:border-primary/50 hover:text-primary transition-all duration-300 cursor-pointer flex items-center justify-center group"
-              >
-                <social.icon className="w-4 h-4 group-hover:scale-110 transition-transform" />
-              </a>
-            ))}
+            <div className="flex items-center gap-6">
+              {(["privacy", "terms"] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => openModal(type)}
+                  className="relative hover:text-primary transition-colors cursor-pointer bg-transparent border-none p-0 focus:outline-none group"
+                >
+                  {t.contact.footer.links[type]}
+                  <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-primary transition-all duration-200 group-hover:w-full" />
+                </button>
+              ))}
+            </div>
           </div>
         </footer>
       </div>
