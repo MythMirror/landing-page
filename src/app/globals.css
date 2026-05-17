@@ -240,3 +240,16 @@
     filter: hue-rotate(35deg);
   }
 }
+
+/* xs breakpoint helper (below 480px) */
+@media (min-width: 480px) {
+  .xs\:flex {
+    display: flex;
+  }
+  .xs\:block {
+    display: block;
+  }
+  .xs\:hidden {
+    display: none;
+  }
+}

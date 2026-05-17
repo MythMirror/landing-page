@@ -35,6 +35,7 @@ export function TeamCard({
    * Mount & Touch Detection
    * -------------------------- */
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     setIsTouch(
       typeof window !== "undefined" &&
@@ -69,7 +70,7 @@ export function TeamCard({
       onMouseLeave={!isTouch ? close : undefined}
       onClick={isTouch ? open : undefined}
       className={cn(
-        "relative w-full max-w-sm h-[450px] rounded-3xl overflow-hidden",
+        "relative w-full max-w-sm h-[400px] sm:h-[440px] md:h-[450px] rounded-3xl overflow-hidden",
         "transition-all duration-500 group border shadow-xl",
         "bg-white border-slate-200 dark:bg-zinc-900 dark:border-white/10",
         "touch-manipulation",

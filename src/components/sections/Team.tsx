@@ -4,99 +4,100 @@ import { useLanguage } from "@/context/LanguageContext";
 import { motion } from "framer-motion";
 import { TeamCard } from "@/components/ui/TeamCard";
 import { SectionDivider } from "../ui/SectionDivider";
+import { Users } from "lucide-react";
+
+const MEMBERS = [
+  { id: "victor_r", img: "/team/victor-rocha.jpg" },
+  { id: "matheus", img: "/team/matheus.jpg" },
+  { id: "victor_g", img: "/team/victor-gabriel.jpg" },
+  { id: "natan", img: "/team/natan.jpg" },
+] as const;
 
 export function Team() {
   const { t } = useLanguage();
-
   const labels = Object.values(t.about.stats_labels);
-
-  // Mapeamento das Imagens
-  const memberImages = {
-    victor_r: "/team/victor-rocha.jpg",
-    matheus: "/team/matheus.jpg",
-    victor_g: "/team/victor-gabriel.jpg",
-    natan: "/team/natan.jpg",
-  };
-
-  const teamMembers = [
-    { id: "victor_r", data: t.about.team.victor_r, img: memberImages.victor_r },
-    { id: "matheus", data: t.about.team.matheus, img: memberImages.matheus },
-    { id: "victor_g", data: t.about.team.victor_g, img: memberImages.victor_g },
-    { id: "natan", data: t.about.team.natan, img: memberImages.natan },
-  ];
 
   return (
     <section
       id="team"
-      className="relative py-24 md:py-32 overflow-hidden bg-background/50"
+      className="relative py-20 sm:py-28 md:py-36 overflow-hidden"
     >
       <SectionDivider position="top" />
 
-      <div className="container px-4 md:px-6 relative z-10">
-        {/* Cabeçalho */}
-        <div className="max-w-3xl mx-auto text-center mb-16 md:mb-24">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className="mb-6 inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary border border-primary/20 backdrop-blur-sm"
-          >
-            {/* Ícone de Grupo */}
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
-          </motion.div>
+      {/* Ambient top glow */}
+      <div
+        className="absolute top-0 left-1/2 -translate-x-1/2 w-[80vw] max-w-3xl h-[30vh] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%,rgba(167,139,250,0.07),transparent 70%)",
+        }}
+      />
 
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            className="text-3xl md:text-5xl font-bold tracking-tight mb-6"
+      <div className="w-full max-w-[90rem] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 18 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.55 }}
+          className="max-w-2xl xl:max-w-3xl mx-auto text-center mb-12 sm:mb-16 md:mb-20"
+        >
+          <div
+            className="mb-5 sm:mb-6 inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full"
+            style={{
+              background:
+                "linear-gradient(135deg,rgba(167,139,250,0.14),rgba(232,121,249,0.08))",
+              border: "1px solid rgba(167,139,250,0.22)",
+              boxShadow: "0 0 28px -8px rgba(167,139,250,0.28)",
+            }}
+          >
+            <Users className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+          </div>
+          <h2
+            className="font-bold tracking-tight mb-4 sm:mb-5"
+            style={{ fontSize: "clamp(1.75rem,4.5vw,3.5rem)" }}
           >
             {t.about.title}
-          </motion.h2>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground leading-relaxed"
-          >
+          </h2>
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground leading-relaxed">
             {t.about.description}
-          </motion.p>
-        </div>
+          </p>
+        </motion.div>
 
-        {/* Grid da Equipe */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 md:gap-8 place-items-center">
-          {teamMembers.map((member, index) => (
-            <motion.div
-              key={member.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ type: "spring", stiffness: 50, delay: index * 0.1 }}
-              className="w-full h-full flex justify-center"
-            >
-              <TeamCard
-                name={member.data.name}
-                role={member.data.role}
-                bio={member.data.bio}
-                stats={member.data.stats}
-                labels={labels}
-                imageSrc={member.img}
-              />
-            </motion.div>
-          ))}
+        {/* Grid
+            mobile:  1 col (full width cards)
+            sm:      2 col
+            xl:      4 col
+            2xl:     4 col with larger gap
+        */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 sm:gap-6 md:gap-7 2xl:gap-8">
+          {MEMBERS.map(({ id, img }, i) => {
+            const data = t.about.team[id as keyof typeof t.about.team];
+            return (
+              <motion.div
+                key={id}
+                initial={{ opacity: 0, y: 28 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{
+                  type: "spring",
+                  stiffness: 55,
+                  damping: 16,
+                  delay: i * 0.08,
+                }}
+                className="w-full flex justify-center"
+              >
+                <TeamCard
+                  name={data.name}
+                  role={data.role}
+                  bio={data.bio}
+                  stats={data.stats}
+                  labels={labels}
+                  imageSrc={img}
+                />
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </section>
